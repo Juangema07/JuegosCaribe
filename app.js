@@ -24,12 +24,38 @@ function ritmo(){
   $("#startRhythm").onclick=show;
  }
  async function show(){
-  if(playing)return;playing=true;$("#startRhythm").disabled=true;document.querySelectorAll(".instrument-audio").forEach(b=>b.disabled=true);
-  const box=$("#listenBox");document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);$("#listenText").textContent="Escucha el patrón…";$("#listenSub").textContent="No mires los instrumentos: solo escucha.";box.classList.add("listening");
-  for(const n of pattern){await new Promise(r=>setTimeout(r,120));box.classList.add("beat");sound(ins[n]);await new Promise(r=>setTimeout(r,650));box.classList.remove("beat")}
-  box.classList.remove("listening");$("#listenText").textContent="Ahora repítelo";$("#listenSub").textContent="Usa los cuatro instrumentos de abajo.";$("#fb").textContent="¡Tu turno!";document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=false);playing=false;
- }
- function tap(v){
+  if(playing)return;
+  playing=true;
+  $("#startRhythm").disabled=true;
+  document.querySelectorAll(".instrument-audio").forEach(b=>b.disabled=true);
+  const box=$("#listenBox");
+  document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);
+  $("#listenText").textContent="Escucha el patrón…";
+  $("#listenSub").textContent="Espera a que termine cada sonido.";
+  box.classList.add("listening");
+  for(const n of pattern){
+    await new Promise(r=>setTimeout(r,100));
+    box.classList.add("beat");
+    const a=cache[ins[n]]??=new Audio(src[ins[n]]);
+    a.pause();a.currentTime=0;a.volume=.9;
+    try{await a.play()}catch(e){}
+    await new Promise(resolve=>{
+      let done=false;
+      const finishAudio=()=>{if(done)return;done=true;a.removeEventListener("ended",finishAudio);clearTimeout(fallback);resolve()};
+      const fallback=setTimeout(finishAudio,1800);
+      a.addEventListener("ended",finishAudio);
+    });
+    box.classList.remove("beat");
+    await new Promise(r=>setTimeout(r,80));
+  }
+  box.classList.remove("listening");
+  $("#listenText").textContent="Ahora repítelo";
+  $("#listenSub").textContent="Usa los cuatro instrumentos de abajo.";
+  $("#fb").textContent="¡Tu turno!";
+  document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=false);
+  playing=false;
+}
+function tap(v){
   if(playing)return;
   if(v!==pattern[input.length]){combo=0;$("#fb").textContent="❌ Orden incorrecto. Vuelve a escuchar.";document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);setTimeout(()=>{input=[];show()},700);return}
   input.push(v);sound(ins[v]);const b=document.querySelector('.rhythm-btn[data-v="'+v+'"]');b.classList.add("active");setTimeout(()=>b.classList.remove("active"),180);
@@ -95,38 +121,64 @@ function rescate(){
  function finish(){if(!playing)return;playing=false;clearInterval(timer);result("rescate",score,rescues===3?"¡Las tres tortugas están a salvo!":"¡Rescate terminado!")}
 }
 function pesca(){
- let caught=0,score=0,playing=true,cast=false,fish=[],sp,drag=false;
- content.innerHTML='<div class="card fishing-card"><div class="game-head"><h2>🎣 Pesca Caribeña</h2><span class="badge"><b id="caught">0</b>/8 peces</span></div><p>Primero lanza el hilo. Después mantén el dedo dentro del agua: el cebo y el hilo se moverán exactamente con él. Suelta el dedo cuando el cebo esté junto a un pez.</p><div class="fishing-zone" id="water"><div class="boat">🛶</div><div class="rod">╲</div><div class="line" id="line"></div><div class="bait" id="bait">🪱</div><div class="cast-guide" id="castGuide">Pulsa «Lanzar hilo»</div></div><div class="fish-controls"><button class="primary" id="cast">🎣 Lanzar hilo</button></div><div class="stat-line"><span>⭐ Puntos: <b id="fishScore">0</b></span><span id="fishHint">Primero lanza el hilo.</span></div></div>';
- const water=$("#water"),bait=$("#bait"),line=$("#line"),guide=$("#castGuide");
- function move(clientX,clientY){
+ let caught=0,score=0,playing=true,cast=false,fish=[],drag=false,spawnLoop;
+ content.innerHTML='<div class="card fishing-card"><div class="game-head"><h2>🎣 Pesca Caribeña</h2><span class="badge"><b id="caught">0</b>/8 peces</span></div><div class="fishing-instructions"><b id="fishHint">1. Pulsa LANZAR.</b><span>2. Arrastra el cebo por el agua.</span><span>3. Suelta el dedo encima de un pez.</span></div><div class="fishing-zone" id="water"><div class="boat">🛶</div><div class="rod">╲</div><div class="line" id="line"></div><div class="bait" id="bait">🪱</div><div class="cast-guide" id="castGuide">Pulsa LANZAR para comenzar</div></div><div class="fish-controls"><button class="primary big-action" id="cast">🎣 LANZAR EL HILO</button></div><div class="stat-line"><span>⭐ Puntos: <b id="fishScore">0</b></span><span>🐟 Atrapa: <b id="fishCount">0</b>/8</span></div></div>';
+ const water=$("#water"),bait=$("#bait"),line=$("#line"),guide=$("#castGuide"),castBtn=$("#cast");
+ function pos(x,y){
    const r=water.getBoundingClientRect();
-   const x=Math.max(18,Math.min(r.width-18,clientX-r.left)),y=Math.max(r.height*.22,Math.min(r.height*.9,clientY-r.top));
-   bait.style.left=x+"px";bait.style.top=y+"px";
-   const rx=r.width*.5,ry=r.height*.10,dx=x-rx,dy=y-ry,len=Math.hypot(dx,dy);
-   line.style.width=len+"px";line.style.height="3px";line.style.left=rx+"px";line.style.top=ry+"px";line.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";line.style.transformOrigin="0 50%";
+   return {x:Math.max(25,Math.min(r.width-25,x-r.left)),y:Math.max(r.height*.2,Math.min(r.height*.86,y-r.top))};
+ }
+ function move(x,y){
+   const p=pos(x,y),r=water.getBoundingClientRect(),rx=r.width*.5,ry=r.height*.1;
+   bait.style.left=p.x+"px";bait.style.top=p.y+"px";
+   const dx=p.x-rx,dy=p.y-ry,len=Math.hypot(dx,dy);
+   line.style.width=len+"px";line.style.left=rx+"px";line.style.top=ry+"px";line.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";
+ }
+ function spawn(){
+   if(!playing||!cast)return;
+   const f=document.createElement("button");f.type="button";f.className="swim-fish";
+   f.textContent=["🐟","🐠","🐡"][Math.floor(Math.random()*3)];
+   f.style.top=(28+Math.random()*48)+"%";
+   f.style.left=(Math.random()>.5? "-8%":"108%");
+   f.dataset.dir=f.style.left==="108%"?"left":"right";
+   water.appendChild(f);fish.push(f);
+   const start=performance.now(),duration=4500+Math.random()*2500;
+   function animate(now){
+     if(!f.isConnected)return;
+     const elapsed=now-start,t=Math.min(1,elapsed/duration),from=f.dataset.dir==="right"?-10:110,to=f.dataset.dir==="right"?110:-10;
+     const x=from+(to-from)*t;
+     f.style.left=x+"%";
+     if(t<1)requestAnimationFrame(animate);else{f.remove();fish=fish.filter(x=>x!==f)}
+   }
+   requestAnimationFrame(animate);
  }
  function nearestFish(){
    const b=bait.getBoundingClientRect(),bx=b.left+b.width/2,by=b.top+b.height/2;
-   return fish.find(f=>{const r=f.getBoundingClientRect();return Math.hypot((r.left+r.width/2)-bx,(r.top+r.height/2)-by)<58});
+   let best=null,dist=Infinity;
+   fish.forEach(f=>{const r=f.getBoundingClientRect(),d=Math.hypot(r.left+r.width/2-bx,r.top+r.height/2-by);if(d<dist){dist=d;best=f}});
+   return dist<72?best:null;
  }
  function catchFish(){
    const target=nearestFish();
-   if(target){target.remove();fish=fish.filter(x=>x!==target);caught++;score+=70;$("#caught").textContent=caught;$("#fishScore").textContent=score;$("#fishHint").textContent="🐟 ¡Pez atrapado!";if(caught>=8)finish()}
-   else{$("#fishHint").textContent="Acerca más el cebo al pez antes de soltar.";score=Math.max(0,score-5);$("#fishScore").textContent=score}
+   if(target){
+     target.remove();fish=fish.filter(x=>x!==target);caught++;score+=70;
+     $("#caught").textContent=caught;$("#fishCount").textContent=caught;$("#fishScore").textContent=score;
+     $("#fishHint").textContent="🐟 ¡Atrapado! Lanza y busca otro.";
+     if(caught>=8)finish();
+   }else{
+     score=Math.max(0,score-5);$("#fishScore").textContent=score;
+     $("#fishHint").textContent="Acerca el cebo al pez y suelta cuando estén juntos.";
+   }
  }
- water.addEventListener("pointerdown",e=>{if(!cast)return;drag=true;water.setPointerCapture(e.pointerId);move(e.clientX,e.clientY)});
+ water.addEventListener("pointerdown",e=>{if(!cast||e.target.closest(".swim-fish"))return;drag=true;water.setPointerCapture(e.pointerId);move(e.clientX,e.clientY);guide.classList.add("hidden")});
  water.addEventListener("pointermove",e=>{if(drag)move(e.clientX,e.clientY)});
- water.addEventListener("pointerup",e=>{if(drag){move(e.clientX,e.clientY);catchFish()}drag=false});
+ water.addEventListener("pointerup",e=>{if(!drag)return;move(e.clientX,e.clientY);catchFish();drag=false});
  water.addEventListener("pointercancel",()=>drag=false);
- $("#cast").onclick=()=>{cast=true;guide.textContent="Mueve el dedo y suelta junto a un pez";guide.classList.remove("hidden");$("#cast").disabled=true;$("#fishHint").textContent="Ahora arrastra el cebo con el dedo."};
- function spawn(){
-   if(!playing||!cast)return;
-   const f=document.createElement("span");f.className="swim-fish";f.textContent=["🐟","🐠","🐡","🐟"][Math.floor(Math.random()*4)];
-   f.style.top=22+Math.random()*62+"%";f.style.animationDuration=3.5+Math.random()*2.5+"s";f.style.animationDirection=Math.random()>.5?"normal":"reverse";water.appendChild(f);fish.push(f);
-   setTimeout(()=>{if(f.isConnected){f.remove();fish=fish.filter(x=>x!==f)}},7000)
- }
- let initial=setInterval(()=>{if(cast){clearInterval(initial);for(let i=0;i<5;i++)spawn();sp=setInterval(spawn,1000)}},100);
- function finish(){if(!playing)return;playing=false;clearInterval(sp);clearInterval(initial);result("pesca",score,"¡Pesca completada!")}
+ castBtn.onclick=()=>{
+   cast=true;castBtn.disabled=true;guide.classList.add("hidden");$("#fishHint").textContent="Arrastra el cebo con el dedo. Suelta cerca de un pez.";
+   for(let i=0;i<4;i++)spawn();spawnLoop=setInterval(spawn,1100);
+ };
+ function finish(){if(!playing)return;playing=false;clearInterval(spawnLoop);result("pesca",score,"¡Pesca completada!")}
 }
 function eco(){
  let sec=40,score=0,health=50,playing=true,spawnLoop;
