@@ -83,3 +83,7 @@ body.dragging-eco{overflow:hidden!important;touch-action:none!important}
 .rescue-controls button{width:52px;height:45px;border:0;border-radius:13px;font-size:1.25rem;font-weight:900;touch-action:none!important}
 .fishing-zone .line{display:block!important;height:3px!important;min-height:3px;background:#26383d!important;transform-origin:0 50%;z-index:20!important;border-radius:3px;opacity:1!important}
 .fishing-zone .bait{z-index:22!important}
+
+.rescue-map .turtle{position:absolute!important;transform:translate(-50%,-50%)!important;touch-action:none!important;cursor:grab!important;user-select:none!important;-webkit-user-select:none!important}
+.rescue-map .turtle.dragging{cursor:grabbing!important;z-index:20!important}
+body.dragging-turtle{overflow:hidden!important;touch-action:none!important}
