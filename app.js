@@ -14,7 +14,7 @@ function result(g,p,t){complete(g,p);content.innerHTML='<div class="card" style=
 function ritmo(){
  let round=0,score=0,combo=0,pattern=[],input=[],playing=false;
  const ins=["tambora","maracas","guira","guiro"],labels=["Tambora","Maracas","Güira","Güiro"],faces=["🥁","🪇","〰️","〰️"];
- const src={tambora:"https://samplefocus.com/samples/tambora-drummer-ethnic-loop",maracas:"https://commons.wikimedia.org/wiki/Special:FilePath/Maracas.ogg",guira:"https://commons.wikimedia.org/wiki/Special:FilePath/G%C3%BCira.ogg",guiro:"https://commons.wikimedia.org/wiki/Special:FilePath/Guiro.ogg"},cache={};
+ const src={tambora:"https://commons.wikimedia.org/wiki/Special:FilePath/Handpercs.ogg",maracas:"https://commons.wikimedia.org/wiki/Special:FilePath/Maracas.ogg",guira:"https://commons.wikimedia.org/wiki/Special:FilePath/G%C3%BCira.ogg",guiro:"https://commons.wikimedia.org/wiki/Special:FilePath/Guiro.ogg"},cache={};
  const sound=n=>{cache[n]??=new Audio(src[n]);const a=cache[n];a.pause();a.currentTime=0;a.volume=.9;a.play().catch(()=>{});clearTimeout(a._shortTimer);a._shortTimer=setTimeout(()=>{a.pause();a.currentTime=0},1150)};
  function make(){pattern=Array.from({length:round<2?3:round<4?4:5},()=>Math.floor(Math.random()*4));input=[]}
  function render(){
