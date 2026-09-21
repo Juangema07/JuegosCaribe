@@ -5,3 +5,5 @@
 .choice-note{font-size:.9rem;color:#698087}
 .eco-board{touch-action:manipulation}
 .eco-item{position:absolute;font-size:2rem;border:0;background:transparent;cursor:pointer}
+
+.rhythm-display{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;min-height:70px;margin:20px 0}.rhythm-symbol{font-size:2rem;background:#eef8f6;border-radius:16px;padding:12px;transition:.15s}.rhythm-symbol.active,.rhythm-btn.active{transform:scale(1.12)}.rhythm-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.rhythm-btn{border:0;border-radius:18px;padding:18px;font-size:1.8rem;background:#eaf6f4;cursor:pointer}.rhythm-btn:disabled{opacity:.45;cursor:not-allowed}@media(max-width:650px){.rhythm-pad{grid-template-columns:repeat(2,1fr)}}
