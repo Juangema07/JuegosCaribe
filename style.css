@@ -13,3 +13,36 @@
 .line{background:#fff4cf;box-shadow:0 0 2px #173b45;z-index:3}.cast-guide{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);background:#073d48cc;color:#fff;padding:9px 13px;border-radius:999px;font-weight:800;z-index:5}.cast-guide.hidden{display:none}.fishing-card p{margin-bottom:8px}.swim-fish{pointer-events:none}.fish-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 .eco-card{overflow:hidden}.eco-mission{margin-bottom:10px}.eco-sort{height:420px;background:linear-gradient(#75d2e3 0 55%,#e3cf96 55% 100%);box-shadow:inset 0 0 0 3px #ffffff44}.eco-sort:after{content:"🌴  🌴  🌴";position:absolute;top:5px;right:14px;font-size:1.6rem;opacity:.75}.eco-title{position:absolute;top:10px;left:14px;color:#fff;font-weight:900;letter-spacing:.08em;text-shadow:0 2px 3px #175e69}.falling-trash{transition:transform .12s}.falling-trash.dragging{transform:scale(1.25);cursor:grabbing}.bins{bottom:12px}.bin{min-height:78px;display:grid;place-items:center;gap:2px;border:2px solid #ffffffaa;box-shadow:0 4px 10px #00000018}.bin strong{font-size:1.6rem}.bin span{font-size:.78rem}.meter{height:16px;border-radius:99px;background:#dfe9e8;overflow:hidden;margin-top:8px}.meter i{display:block;height:100%;background:#4aa27b;transition:width .2s}
 @media(max-width:650px){.instrument-list{grid-template-columns:repeat(2,1fr)}.ingredient-grid{grid-template-columns:repeat(2,1fr)}.ingredient-card img{height:95px}.eco-sort{height:360px}}
+
+/* ===== REDISEÑO DE INTERFAZ ===== */
+:root{--ink:#14343b;--muted:#62777b;--paper:#ffffff;--soft:#f3f8f7;--line:#dce9e7;--accent:#087f8c;--accent2:#0e6570;--sand:#f3dfad;--shadow:0 18px 45px rgba(20,52,59,.12)}
+*{box-sizing:border-box}
+body{background:radial-gradient(circle at 10% 0%,#e4f7f3 0,transparent 30%),linear-gradient(180deg,#f8fbfa,#eef5f3);color:var(--ink)}
+main{max-width:1050px;margin:auto;padding:18px}
+.hero{position:relative;overflow:hidden;border-radius:30px;padding:32px;background:linear-gradient(135deg,#0b6873,#084651);color:#fff;box-shadow:var(--shadow);margin-bottom:28px}
+.hero:after{content:"🌴  🌴  🌴";position:absolute;right:20px;bottom:12px;font-size:3rem;opacity:.18}
+.hero h1{font-size:clamp(2.2rem,7vw,4.4rem);margin:5px 0}
+.hero p{max-width:600px;color:#d9f1ef;font-size:1.05rem}
+.eyebrow,.game-kicker{font-size:.72rem;font-weight:900;letter-spacing:.15em;opacity:.8}
+.hero-stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.hero-stats span{background:#ffffff18;border:1px solid #ffffff30;padding:10px 14px;border-radius:999px}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:20px 4px 14px}.section-title h2{margin:0}.section-title span{color:var(--muted);font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.game-card{min-height:190px;text-align:left;border:1px solid var(--line);border-radius:24px;background:#fff;padding:22px;display:grid;grid-template-columns:auto 1fr;column-gap:14px;box-shadow:0 8px 25px rgba(20,52,59,.07);cursor:pointer;transition:.18s}
+.game-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#b7dcd8}.game-card:active{transform:scale(.99)}
+.game-card .icon{grid-row:span 3;font-size:3rem}.game-card b{font-size:1.2rem}.game-card small{color:var(--muted);line-height:1.45}.game-card em{font-style:normal;color:var(--accent);font-size:.78rem;font-weight:900;margin-top:8px}
+#game{max-width:820px;margin:auto}.card{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow)}
+.game-head{display:flex;justify-content:space-between;align-items:center;gap:15px}.game-head h2{margin:3px 0;font-size:clamp(1.4rem,4vw,2rem)}.badge{white-space:nowrap;background:#e7f5f2;color:var(--accent2);border-radius:999px;padding:9px 12px;font-weight:900}
+.back{border:0;background:transparent;color:var(--accent2);font-weight:900;padding:10px 0;cursor:pointer}.passport{margin:28px 0;padding:22px;border-radius:25px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 25px rgba(20,52,59,.06)}
+.stamp-row{display:flex;gap:9px;flex-wrap:wrap}.stamp{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#eef4f3;color:#a7b6b5;font-size:1.5rem}.stamp.done{background:#dff2ee;color:var(--accent)}
+.howto{display:grid;grid-template-columns:auto 1fr;gap:7px 12px;background:#f4f9f8;border:1px solid var(--line);padding:15px;border-radius:18px;margin:18px 0}.howto strong{color:var(--accent2)}.howto span{color:var(--muted)}
+.subhead{display:flex;justify-content:space-between;align-items:center;margin:16px 0 9px}.subhead h3{margin:0}.subhead span{font-size:.75rem;color:var(--muted);font-weight:900}
+.listen-box{height:175px!important;border:1px solid #245963!important;box-shadow:inset 0 0 40px #062d34!important;position:relative;gap:5px}.sound-orb{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;background:#d9f3ef;color:var(--accent2);font-size:2rem;box-shadow:0 0 0 8px #ffffff12}.listen-box.beat .sound-orb{transform:scale(1.18);box-shadow:0 0 0 14px #ffffff18}.instrument-audio{min-height:120px!important;border:1px solid var(--line)!important;box-shadow:0 6px 16px rgba(20,52,59,.06)}.instrument-audio:disabled{opacity:.45}.rhythm-pad{gap:12px!important}.rhythm-btn{min-height:105px!important;border:2px solid var(--line)!important;box-shadow:0 6px 14px rgba(20,52,59,.06)}.rhythm-btn.active{border-color:var(--accent)!important;box-shadow:0 0 0 5px #087f8c22!important}
+.kitchen-card,.rescue-card,.fishing-card,.eco-card{overflow:hidden}.dish-photo{height:260px!important}.recipe-panel{display:grid;gap:10px}.ingredient-card{min-height:145px}.ingredient-card img{height:100px!important}
+.rescue-map{height:430px!important}.rescue-map:after{content:"🌴        🌴";position:absolute;right:12px;top:8px;font-size:2rem;opacity:.3}.turtle{filter:drop-shadow(0 4px 4px #0004)}
+.fishing-zone{height:430px!important;background:linear-gradient(#75d8e8 0 14%,#0c829e 14% 100%)!important}.fishing-zone:after{content:"≈  ≈  ≈  ≈  ≈";position:absolute;left:0;right:0;top:18%;color:#b5eef2;font-size:1.5rem;letter-spacing:.4em;opacity:.35}.fish-controls .primary{flex:1;min-width:170px}
+.eco-sort{height:430px!important}.falling-trash{filter:drop-shadow(0 4px 3px #0004)}.bin{min-height:95px!important}
+.feedback{margin-top:14px;border-radius:14px;padding:12px 14px;background:#f4f9f8;border:1px solid var(--line);font-weight:900}
+.primary{border:0;border-radius:14px;cursor:pointer;box-shadow:0 7px 16px rgba(8,127,140,.18)}.big-action{min-height:52px}
+footer{text-align:center;color:var(--muted);padding:20px}
+@media(max-width:700px){main{padding:10px}.hero{padding:24px;border-radius:24px}.grid{grid-template-columns:1fr}.game-card{min-height:155px}.card{padding:15px;border-radius:22px}.game-head{align-items:flex-start}.instrument-list{grid-template-columns:repeat(2,1fr)}.dish-photo{height:210px!important}.rescue-map,.fishing-zone,.eco-sort{height:360px!important}.howto{grid-template-columns:1fr}.howto span{margin-bottom:5px}}
+@media(max-width:390px){.instrument-list{grid-template-columns:1fr 1fr}.rhythm-pad{grid-template-columns:1fr 1fr}.game-card{padding:17px}.game-card .icon{font-size:2.4rem}}
