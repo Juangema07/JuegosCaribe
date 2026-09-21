@@ -55,3 +55,16 @@ footer{text-align:center;color:var(--muted);padding:20px}
 .bait{z-index:8!important;pointer-events:none!important;position:absolute}
 .line{z-index:7!important;pointer-events:none}
 .cast-guide{z-index:9!important}
+
+
+/* ===== Correcciones de interacción táctil ===== */
+.eco-sort{touch-action:none!important;user-select:none;-webkit-user-select:none;overscroll-behavior:contain}
+.eco-sort #ecoItems{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.falling-trash{pointer-events:auto!important;touch-action:none!important;user-select:none;-webkit-user-select:none}
+.rescue-map{touch-action:none!important;user-select:none;-webkit-user-select:none;overscroll-behavior:contain}
+.rescue-controls{display:grid;justify-items:center;gap:4px;margin:12px auto 4px;width:max-content;touch-action:none}
+.rescue-controls>div{display:flex;gap:4px}
+.rescue-controls button{width:52px;height:45px;border:0;border-radius:13px;background:#e7f5f2;color:#0e6570;font-size:1.25rem;font-weight:900;box-shadow:0 4px 10px rgba(20,52,59,.1);touch-action:none}
+.rescue-controls button:active{transform:scale(.94);background:#d5eee9}
+.rescue-rock{transform:translate(-50%,-50%)}
+.nest{transform:translate(-50%,-50%)}
