@@ -14,7 +14,7 @@ function result(g,p,t){complete(g,p);content.innerHTML='<div class="card" style=
 function ritmo(){
  let round=0,score=0,combo=0,pattern=[],input=[],playing=false;
  const ins=["tambora","maracas","guira","guiro"],labels=["Tambora","Maracas","Güira","Güiro"],faces=["🥁","🪇","〰️","〰️"];
- const src={tambora:"https://commons.wikimedia.org/wiki/Special:FilePath/Tom_drum_8_inch.ogg",maracas:"https://commons.wikimedia.org/wiki/Special:FilePath/Maracas.ogg",guira:"https://commons.wikimedia.org/wiki/Special:FilePath/G%C3%BCira.ogg",guiro:"https://commons.wikimedia.org/wiki/Special:FilePath/Guiro.ogg"},cache={};
+ const src={tambora:"https://commons.wikimedia.org/wiki/Special:FilePath/Handpercs.ogg",maracas:"https://commons.wikimedia.org/wiki/Special:FilePath/Maracas.ogg",guira:"https://commons.wikimedia.org/wiki/Special:FilePath/G%C3%BCira.ogg",guiro:"https://commons.wikimedia.org/wiki/Special:FilePath/Guiro.ogg"},cache={};
  const sound=n=>{cache[n]??=new Audio(src[n]);const a=cache[n];a.pause();a.currentTime=0;a.volume=.9;a.play().catch(()=>{});clearTimeout(a._shortTimer);a._shortTimer=setTimeout(()=>{a.pause();a.currentTime=0},1150)};
  function make(){pattern=Array.from({length:round<2?3:round<4?4:5},()=>Math.floor(Math.random()*4));input=[]}
  function render(){
@@ -24,38 +24,12 @@ function ritmo(){
   $("#startRhythm").onclick=show;
  }
  async function show(){
-  if(playing)return;
-  playing=true;
-  $("#startRhythm").disabled=true;
-  document.querySelectorAll(".instrument-audio").forEach(b=>b.disabled=true);
-  const box=$("#listenBox");
-  document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);
-  $("#listenText").textContent="Escucha el patrón…";
-  $("#listenSub").textContent="Espera a que termine cada sonido.";
-  box.classList.add("listening");
-  for(const n of pattern){
-    await new Promise(r=>setTimeout(r,100));
-    box.classList.add("beat");
-    const a=cache[ins[n]]??=new Audio(src[ins[n]]);
-    a.pause();a.currentTime=0;a.volume=.9;
-    try{await a.play()}catch(e){}
-    await new Promise(resolve=>{
-      let done=false;
-      const finishAudio=()=>{if(done)return;done=true;a.removeEventListener("ended",finishAudio);clearTimeout(fallback);resolve()};
-      const fallback=setTimeout(finishAudio,1800);
-      a.addEventListener("ended",finishAudio);
-    });
-    box.classList.remove("beat");
-    await new Promise(r=>setTimeout(r,80));
-  }
-  box.classList.remove("listening");
-  $("#listenText").textContent="Ahora repítelo";
-  $("#listenSub").textContent="Usa los cuatro instrumentos de abajo.";
-  $("#fb").textContent="¡Tu turno!";
-  document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=false);
-  playing=false;
-}
-function tap(v){
+  if(playing)return;playing=true;$("#startRhythm").disabled=true;document.querySelectorAll(".instrument-audio").forEach(b=>b.disabled=true);
+  const box=$("#listenBox");document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);$("#listenText").textContent="Escucha el patrón…";$("#listenSub").textContent="No mires los instrumentos: solo escucha.";box.classList.add("listening");
+  for(const n of pattern){await new Promise(r=>setTimeout(r,120));box.classList.add("beat");sound(ins[n]);await new Promise(r=>setTimeout(r,650));box.classList.remove("beat")}
+  box.classList.remove("listening");$("#listenText").textContent="Ahora repítelo";$("#listenSub").textContent="Usa los cuatro instrumentos de abajo.";$("#fb").textContent="¡Tu turno!";document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=false);playing=false;
+ }
+ function tap(v){
   if(playing)return;
   if(v!==pattern[input.length]){combo=0;$("#fb").textContent="❌ Orden incorrecto. Vuelve a escuchar.";document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);setTimeout(()=>{input=[];show()},700);return}
   input.push(v);sound(ins[v]);const b=document.querySelector('.rhythm-btn[data-v="'+v+'"]');b.classList.add("active");setTimeout(()=>b.classList.remove("active"),180);
@@ -96,30 +70,15 @@ function cocina(){
 
 function rescate(){
  let sec=30,score=0,rescues=0,playing=true,drag=false;
- content.innerHTML='<div class="card rescue-card"><div class="game-head"><h2>🐢 Rescate del Caribe</h2><span class="badge">⏱️ <b id="sec">30</b>s</span></div><div class="mission-box"><b>Tu misión</b><span>Guía la tortuga hasta los 3 nidos sin tocar los peligros.</span><small>Arrastra la tortuga con el dedo. Evita rocas, basura y zonas peligrosas.</small></div><div class="rescue-map" id="rescueMap"><div class="sea-label">MAR</div><div class="beach-label">PLAYA</div><span class="hazard h1">🌊</span><span class="hazard h2">🪼</span><span class="hazard h3">🦀</span><span class="hazard h4">🪸</span><span class="nest n1"><b>NIDO 1</b>🪺</span><span class="nest n2"><b>NIDO 2</b>🪺</span><span class="nest n3"><b>NIDO 3</b>🪺</span><span class="turtle" id="turtle">🐢</span><img class="rescue-rock r1" src="assets/rock.svg" alt=""><img class="rescue-rock r2" src="assets/rock.svg" alt=""><img class="rescue-rock r3" src="assets/rock.svg" alt=""></div><div class="rescue-progress"><span>🪺 Nidos: <b id="resc">0</b>/3</span><span>⭐ Puntos: <b id="rp">0</b></span></div></div>';
+ content.innerHTML='<div class="card rescue-card"><div class="game-head"><h2>🐢 Rescate del Caribe</h2><span class="badge">⏱️ <b id="sec">30</b>s</span></div><div class="mission-box"><b>Tu misión</b><span>Lleva la tortuga hasta los 3 nidos marcados en la playa.</span><small>Arrastra la tortuga con el dedo. Cuando entre en un nido, quedará guardada.</small></div><div class="rescue-map" id="rescueMap"><div class="sea-label">MAR</div><div class="beach-label">PLAYA</div><span class="nest n1"><b>NIDO 1</b>🪺</span><span class="nest n2"><b>NIDO 2</b>🪺</span><span class="nest n3"><b>NIDO 3</b>🪺</span><span class="turtle" id="turtle">🐢</span><span class="rescue-rock r1">🪨</span><span class="rescue-rock r2">🪨</span></div><div class="rescue-progress"><span>🪺 Nidos: <b id="resc">0</b>/3</span><span>⭐ Puntos: <b id="rp">0</b></span></div></div>';
  const map=$("#rescueMap"),t=$("#turtle");
- function move(x,y){
-   const r=map.getBoundingClientRect();
-   const px=Math.max(5,Math.min(r.width-5,x-r.left)),py=Math.max(8,Math.min(r.height-8,y-r.top));
-   t.style.left=px+"px";t.style.top=py+"px";checkHazards();checkNests();
- }
- function hit(a,b,pad=12){return Math.hypot((a.left+a.width/2)-(b.left+b.width/2),(a.top+a.height/2)-(b.top+b.height/2))<(Math.max(a.width,a.height)+Math.max(b.width,b.height))/2+pad}
- function checkHazards(){
-   const tr=t.getBoundingClientRect();
-   let danger=false;
-   document.querySelectorAll(".hazard,.rescue-rock").forEach(h=>{if(!h.dataset.hit&&hit(tr,h,5))danger=true});
-   if(danger){score=Math.max(0,score-15);$( "#rp").textContent=score;t.classList.add("hurt");setTimeout(()=>t.classList.remove("hurt"),220)}
- }
- function checkNests(){
-   const tr=t.getBoundingClientRect();
-   document.querySelectorAll(".nest").forEach(n=>{if(n.dataset.hit)return;const nr=n.getBoundingClientRect();if(hit(tr,nr,18)){n.dataset.hit=1;n.classList.add("saved");score+=100;rescues++;$("#resc").textContent=rescues;$("#rp").textContent=score;if(rescues===3)finish()}});
- }
- map.addEventListener("pointerdown",e=>{drag=true;map.setPointerCapture(e.pointerId);move(e.clientX,e.clientY)});
- map.addEventListener("pointermove",e=>{if(drag)move(e.clientX,e.clientY)});
- map.addEventListener("pointerup",()=>drag=false);map.addEventListener("pointercancel",()=>drag=false);
+ function move(x,y){const r=map.getBoundingClientRect();t.style.left=Math.max(5,Math.min(95,(x-r.left)/r.width*100))+"%";t.style.top=Math.max(10,Math.min(90,(y-r.top)/r.height*100))+"%";check()}
+ function check(){document.querySelectorAll(".nest").forEach(n=>{if(n.dataset.hit)return;const a=n.getBoundingClientRect(),b=t.getBoundingClientRect();if(Math.abs(a.left-b.left)<55&&Math.abs(a.top-b.top)<55){n.dataset.hit=1;n.classList.add("saved");score+=100;rescues++;$("#resc").textContent=rescues;$("#rp").textContent=score;if(rescues===3)finish()}})}
+ map.addEventListener("pointerdown",e=>{drag=true;map.setPointerCapture(e.pointerId);move(e.clientX,e.clientY)});map.addEventListener("pointermove",e=>drag&&move(e.clientX,e.clientY));map.addEventListener("pointerup",()=>drag=false);map.addEventListener("pointercancel",()=>drag=false);
  timer=setInterval(()=>{sec--;$("#sec").textContent=sec;if(sec<=0)finish()},1000);
  function finish(){if(!playing)return;playing=false;clearInterval(timer);result("rescate",score,rescues===3?"¡Las tres tortugas están a salvo!":"¡Rescate terminado!")}
 }
+
 function pesca(){
  let caught=0,score=0,playing=true,cast=false,fish=[],drag=false,spawnLoop;
  content.innerHTML='<div class="card fishing-card"><div class="game-head"><h2>🎣 Pesca Caribeña</h2><span class="badge"><b id="caught">0</b>/8 peces</span></div><div class="fishing-instructions"><b id="fishHint">1. Pulsa LANZAR.</b><span>2. Arrastra el cebo por el agua.</span><span>3. Suelta el dedo encima de un pez.</span></div><div class="fishing-zone" id="water"><div class="boat">🛶</div><div class="rod">╲</div><div class="line" id="line"></div><div class="bait" id="bait">🪱</div><div class="cast-guide" id="castGuide">Pulsa LANZAR para comenzar</div></div><div class="fish-controls"><button class="primary big-action" id="cast">🎣 LANZAR EL HILO</button></div><div class="stat-line"><span>⭐ Puntos: <b id="fishScore">0</b></span><span>🐟 Atrapa: <b id="fishCount">0</b>/8</span></div></div>';
@@ -180,23 +139,16 @@ function pesca(){
  };
  function finish(){if(!playing)return;playing=false;clearInterval(spawnLoop);result("pesca",score,"¡Pesca completada!")}
 }
+
 function eco(){
  let sec=40,score=0,health=50,playing=true,spawnLoop;
- const kinds=[["🧴","♻️","Botella de plástico"],["🥤","♻️","Vaso"],["🍌","🌱","Orgánico"],["🍎","🌱","Orgánico"],["📦","♻️","Cartón"],["🗑️","🗑️","Basura"]];
- content.innerHTML='<div class="card eco-card"><div class="game-head"><h2>🌊 Salva el Ecosistema</h2><span class="badge">⏱️ <b id="ecoSec">40</b>s</span></div><div class="mission-box eco-mission"><b>Clasifica los residuos</b><span>Arrastra cada objeto desde la playa hasta su contenedor.</span><small>No necesitas mover la página: el área de juego bloquea el desplazamiento mientras arrastras.</small></div><div class="eco-sort" id="ecoSort"><div class="eco-title">🏝️ PLAYA DEL CARIBE</div><div id="ecoItems"></div><div class="bins"><button class="bin recycle" data-bin="♻️"><strong>♻️</strong><span>RECICLAJE</span></button><button class="bin organic" data-bin="🌱"><strong>🌱</strong><span>ORGÁNICO</span></button><button class="bin trashbin" data-bin="🗑️"><strong>🗑️</strong><span>BASURA</span></button></div></div><div class="stat-line"><span>🌱 Salud: <b id="health">50</b>/100</span><span>⭐ Puntos: <b id="ecoPts">0</b></span><span>🧹 Residuos: <b id="ecoClean">0</b></span></div><div class="meter"><i id="healthBar" style="width:50%"></i></div></div>';
- const area=$("#ecoSort"),items=$("#ecoItems");let cleaned=0;
+ const kinds=[["🧴","♻️","Plástico"],["🥤","♻️","Lata/vaso"],["🍌","🌱","Orgánico"],["🍎","🌱","Orgánico"],["📦","♻️","Cartón"],["🗑️","🗑️","Basura"]];
+ content.innerHTML='<div class="card eco-card"><div class="game-head"><h2>🌊 Salva el Ecosistema</h2><span class="badge">⏱️ <b id="ecoSec">40</b>s</span></div><div class="mission-box eco-mission"><b>¿Qué debes hacer?</b><span>La playa está llena de residuos.</span><small>Arrastra cada objeto al contenedor que corresponde. Los aciertos limpian la playa y recuperan el ecosistema.</small></div><div class="eco-sort" id="ecoSort"><div class="eco-title">🏝️ PLAYA DEL CARIBE</div><div id="ecoItems"></div><div class="bins"><button class="bin recycle" data-bin="♻️"><strong>♻️</strong><span>RECICLAJE</span></button><button class="bin organic" data-bin="🌱"><strong>🌱</strong><span>ORGÁNICO</span></button><button class="bin trashbin" data-bin="🗑️"><strong>🗑️</strong><span>BASURA</span></button></div></div><div class="stat-line"><span>🌱 Salud: <b id="health">50</b>/100</span><span>⭐ Puntos: <b id="ecoPts">0</b></span><span>🧹 Residuos: <b id="ecoClean">0</b></span></div><div class="meter"><i id="healthBar" style="width:50%"></i></div></div>';
+ const area=$("#ecoSort"),items=$("#ecoItems");
+ let cleaned=0;
  function update(){$("#ecoPts").textContent=score;$("#health").textContent=health;$("#healthBar").style.width=health+"%";$("#ecoClean").textContent=cleaned}
- function spawn(){
-   if(!playing)return;
-   const k=kinds[Math.floor(Math.random()*kinds.length)],e=document.createElement("button");
-   e.className="falling-trash";e.textContent=k[0];e.dataset.type=k[1];e.title=k[2];
-   e.style.left=8+Math.random()*84+"%";e.style.top=18+Math.random()*30+"%";items.appendChild(e);
-   let dragging=false;
-   e.onpointerdown=ev=>{ev.preventDefault();ev.stopPropagation();dragging=true;e.setPointerCapture(ev.pointerId);e.classList.add("dragging")};
-   e.onpointermove=ev=>{if(!dragging)return;const r=area.getBoundingClientRect();e.style.left=Math.max(3,Math.min(93,(ev.clientX-r.left)/r.width*100))+"%";e.style.top=Math.max(8,Math.min(68,(ev.clientY-r.top)/r.height*100))+"%"};
-   e.onpointerup=ev=>{if(!dragging)return;dragging=false;const el=document.elementFromPoint(ev.clientX,ev.clientY),bin=el&&el.closest(".bin");if(bin&&bin.dataset.bin===e.dataset.type){score+=45;health=Math.min(100,health+5);cleaned++;e.classList.add("correct")}else if(bin){score=Math.max(0,score-20);health=Math.max(0,health-12);e.classList.add("wrong")}update();setTimeout(()=>e.remove(),120)};
-   e.onpointercancel=()=>{dragging=false};
+ function spawn(){if(!playing)return;const k=kinds[Math.floor(Math.random()*kinds.length)],e=document.createElement("button");e.className="falling-trash";e.textContent=k[0];e.dataset.type=k[1];e.title=k[2];e.style.left=8+Math.random()*84+"%";e.style.top="4%";items.appendChild(e);let moveFn,upFn;
+  e.onpointerdown=ev=>{ev.preventDefault();e.setPointerCapture(ev.pointerId);e.classList.add("dragging");moveFn=x=>{const r=area.getBoundingClientRect();e.style.left=Math.max(2,Math.min(92,(x.clientX-r.left)/r.width*100))+"%";e.style.top=Math.max(3,Math.min(62,(x.clientY-r.top)/r.height*100))+"%"};upFn=x=>{const bin=document.elementFromPoint(x.clientX,x.clientY)?.closest(".bin");if(bin){if(bin.dataset.bin===e.dataset.type){score+=45;health=Math.min(100,health+5);cleaned++}else{score=Math.max(0,score-20);health=Math.max(0,health-12)}update()}e.remove();document.removeEventListener("pointermove",moveFn);document.removeEventListener("pointerup",upFn)};document.addEventListener("pointermove",moveFn);document.addEventListener("pointerup",upFn)}
  }
- for(let i=0;i<5;i++)spawn();spawnLoop=setInterval(spawn,900);
- timer=setInterval(()=>{sec--;$("#ecoSec").textContent=sec;if(sec<=0){playing=false;clearInterval(timer);clearInterval(spawnLoop);result("eco",score,"¡Ecosistema protegido!")}},1000);
+ for(let i=0;i<5;i++)spawn();spawnLoop=setInterval(spawn,850);timer=setInterval(()=>{sec--;$("#ecoSec").textContent=sec;if(sec<=0){playing=false;clearInterval(timer);clearInterval(spawnLoop);result("eco",score,"¡Ecosistema protegido!")}},1000);
 }
