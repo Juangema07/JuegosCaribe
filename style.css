@@ -68,3 +68,18 @@ footer{text-align:center;color:var(--muted);padding:20px}
 .rescue-controls button:active{transform:scale(.94);background:#d5eee9}
 .rescue-rock{transform:translate(-50%,-50%)}
 .nest{transform:translate(-50%,-50%)}
+
+
+/* Correcciones definitivas de interacción */
+body.dragging-eco{overflow:hidden!important;touch-action:none!important}
+.eco-sort{touch-action:none!important;overscroll-behavior:none!important;overflow:hidden!important}
+.eco-sort #ecoItems{touch-action:none!important;overflow:hidden!important}
+.falling-trash{touch-action:none!important;user-select:none!important;-webkit-user-select:none!important}
+.falling-trash.dragging{z-index:30!important;transform:scale(1.12)}
+.rescue-map{position:relative!important;touch-action:none!important;overflow:hidden!important}
+.rescue-rock{position:absolute!important;z-index:5;transform:translate(-50%,-50%)}
+.rescue-controls{display:grid;justify-items:center;gap:4px;margin:12px auto;width:max-content}
+.rescue-controls>div{display:flex;gap:4px}
+.rescue-controls button{width:52px;height:45px;border:0;border-radius:13px;font-size:1.25rem;font-weight:900;touch-action:none!important}
+.fishing-zone .line{display:block!important;height:3px!important;min-height:3px;background:#26383d!important;transform-origin:0 50%;z-index:20!important;border-radius:3px;opacity:1!important}
+.fishing-zone .bait{z-index:22!important}
