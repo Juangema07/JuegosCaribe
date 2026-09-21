@@ -64,3 +64,11 @@ footer{text-align:center;color:var(--muted);padding:20px}
 .falling-trash{pointer-events:auto;touch-action:none!important}
 .falling-trash.correct{animation:correctTrash .18s ease-out}.falling-trash.wrong{animation:wrongTrash .18s ease-out}
 @keyframes correctTrash{to{transform:scale(1.6);opacity:0}}@keyframes wrongTrash{50%{transform:translateX(-8px)}}
+
+.fishing-instructions{display:grid;grid-template-columns:1fr;gap:5px;background:#eef8f7;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:14px 0;color:var(--muted)}
+.fishing-instructions b{color:var(--accent2)}
+.fishing-zone{touch-action:none!important;user-select:none;-webkit-user-select:none;overflow:hidden}
+.swim-fish{position:absolute!important;z-index:6;border:0;background:transparent;padding:0;margin:0;font-size:2.5rem;line-height:1;pointer-events:none;transform:translateX(-50%);will-change:left}
+.bait{z-index:8!important;pointer-events:none!important;position:absolute}
+.line{z-index:7!important;pointer-events:none}
+.cast-guide{z-index:9!important}
