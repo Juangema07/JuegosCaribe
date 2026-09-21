@@ -15,7 +15,7 @@ function ritmo(){
  let round=0,score=0,combo=0,pattern=[],input=[],playing=false;
  const ins=["tambora","maracas","guira","guiro"],labels=["Tambora","Maracas","Güira","Güiro"],faces=["🥁","🪇","〰️","〰️"];
  const src={tambora:"https://commons.wikimedia.org/wiki/Special:FilePath/Bass_drum.ogg",maracas:"https://commons.wikimedia.org/wiki/Special:FilePath/Maracas.ogg",guira:"https://commons.wikimedia.org/wiki/Special:FilePath/G%C3%BCira.ogg",guiro:"https://commons.wikimedia.org/wiki/Special:FilePath/Guiro.ogg"},cache={};
- const playShort=async n=>{cache[n]??=new Audio(src[n]);const a=cache[n];a.pause();a.currentTime=0;a.volume=.9;clearTimeout(a._shortTimer);let resolveEnd;const ended=new Promise(resolve=>{resolveEnd=()=>{a.removeEventListener("ended",resolveEnd);resolve()};a.addEventListener("ended",resolveEnd,{once:true})});a._shortTimer=setTimeout(()=>{a.pause();a.currentTime=0;resolveEnd()},2000);try{await a.play()}catch(e){resolveEnd()}await ended};
+ const playShort=async n=>{cache[n]??=new Audio(src[n]);const a=cache[n];a.pause();a.currentTime=0;a.volume=.9;clearTimeout(a._shortTimer);let resolveEnd;const ended=new Promise(resolve=>{resolveEnd=()=>{a.removeEventListener("ended",resolveEnd);resolve()};a.addEventListener("ended",resolveEnd,{once:true})});a._shortTimer=setTimeout(()=>{a.pause();a.currentTime=0;resolveEnd()},1500);try{await a.play()}catch(e){resolveEnd()}await ended};
  const sound=n=>playShort(n);
  function make(){pattern=Array.from({length:round<2?3:round<4?4:5},()=>Math.floor(Math.random()*4));input=[]}
  function render(){
@@ -27,7 +27,7 @@ function ritmo(){
  async function show(){
   if(playing)return;playing=true;$("#startRhythm").disabled=true;document.querySelectorAll(".instrument-audio").forEach(b=>b.disabled=true);
   const box=$("#listenBox");document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);$("#listenText").textContent="Escucha el patrón…";$("#listenSub").textContent="No mires los instrumentos: solo escucha.";box.classList.add("listening");
-  for(const n of pattern){await new Promise(r=>setTimeout(r,120));box.classList.add("beat");const audio=cache[ins[n]]??=new Audio(src[ins[n]]);audio.pause();audio.currentTime=0;audio.volume=.9;await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;audio.removeEventListener("ended",finish);clearTimeout(limit);resolve()};audio.addEventListener("ended",finish,{once:true});const limit=setTimeout(()=>{audio.pause();audio.currentTime=0;finish()},2000);audio.play().catch(finish)});box.classList.remove("beat");await new Promise(r=>setTimeout(r,120))}
+  for(const n of pattern){await new Promise(r=>setTimeout(r,120));box.classList.add("beat");const audio=cache[ins[n]]??=new Audio(src[ins[n]]);audio.pause();audio.currentTime=0;audio.volume=.9;await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;audio.removeEventListener("ended",finish);clearTimeout(limit);resolve()};audio.addEventListener("ended",finish,{once:true});const limit=setTimeout(()=>{audio.pause();audio.currentTime=0;finish()},1500);audio.play().catch(finish)});box.classList.remove("beat");await new Promise(r=>setTimeout(r,120))}
   box.classList.remove("listening");$("#listenText").textContent="Ahora repítelo";$("#listenSub").textContent="Usa los cuatro instrumentos de abajo.";$("#fb").textContent="¡Tu turno!";document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=false);playing=false;
  }
  function tap(v){
