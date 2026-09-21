@@ -70,23 +70,33 @@ function cocina(){
 }
 
 function rescate(){
- let sec=40,score=0,rescues=0,playing=true,keys={},moveLoop,timerId;
- content.innerHTML='<div class="card rescue-card"><div class="game-head"><h2>🐢 Rescate del Caribe</h2><span class="badge">⏱️ <b id="sec">40</b>s</span></div><div class="mission-box"><b>Tu misión</b><span>Guía la tortuga hasta los 3 nidos marcados en la playa.</span><small>Muévela con las flechas o los botones. Las rocas bloquean el camino.</small></div><div class="rescue-map" id="rescueMap"><div class="sea-label">MAR</div><div class="beach-label">PLAYA</div><span class="nest n1"><b>NIDO 1</b>🪺</span><span class="nest n2"><b>NIDO 2</b>🪺</span><span class="nest n3"><b>NIDO 3</b>🪺</span><span class="turtle" id="turtle">🐢</span><span class="rescue-rock r1">🪨</span><span class="rescue-rock r2">🪨</span><span class="rescue-rock r3">🪨</span><span class="rescue-rock r4">🪨</span></div><div class="rescue-controls"><button data-dir="up">▲</button><div><button data-dir="left">◀</button><button data-dir="down">▼</button><button data-dir="right">▶</button></div></div><div class="rescue-progress"><span>🪺 Nidos: <b id="resc">0</b>/3</span><span>⭐ Puntos: <b id="rp">0</b></span></div></div>';
- const map=$("#rescueMap"),t=$("#turtle");let x=15,y=82;
+ let sec=40,score=0,rescues=0,playing=true,timerId,dragging=false;
+ content.innerHTML='<div class="card rescue-card"><div class="game-head"><h2>🐢 Rescate del Caribe</h2><span class="badge">⏱️ <b id="sec">40</b>s</span></div><div class="mission-box"><b>Tu misión</b><span>Guía la tortuga hasta los 3 nidos marcados en la playa.</span><small>Arrastra la tortuga directamente. Al tocarla, se queda pegada a tu dedo sin saltar.</small></div><div class="rescue-map" id="rescueMap"><div class="sea-label">MAR</div><div class="beach-label">PLAYA</div><span class="nest n1"><b>NIDO 1</b>🪺</span><span class="nest n2"><b>NIDO 2</b>🪺</span><span class="nest n3"><b>NIDO 3</b>🪺</span><span class="turtle" id="turtle">🐢</span><span class="rescue-rock r1">🪨</span><span class="rescue-rock r2">🪨</span><span class="rescue-rock r3">🪨</span><span class="rescue-rock r4">🪨</span></div><div class="rescue-progress"><span>🪺 Nidos: <b id="resc">0</b>/3</span><span>⭐ Puntos: <b id="rp">0</b></span></div></div>';
+ const map=$("#rescueMap"),t=$("#turtle");let x=15,y=82,offsetX=0,offsetY=0;
  const obstacles=[{x:28,y:28},{x:55,y:38},{x:78,y:58},{x:48,y:72}],nests=[{x:12,y:18},{x:82,y:30},{x:45,y:82}];
  document.querySelectorAll(".nest").forEach((n,i)=>{n.style.left=nests[i].x+"%";n.style.top=nests[i].y+"%"});
  document.querySelectorAll(".rescue-rock").forEach((r,i)=>{r.style.left=obstacles[i].x+"%";r.style.top=obstacles[i].y+"%"});
  function draw(){t.style.left=x+"%";t.style.top=y+"%";checkNests()}
  function blocked(nx,ny){return obstacles.some(o=>Math.hypot(nx-o.x,ny-o.y)<8)}
- function step(dir){if(!playing)return;let nx=x,ny=y,s=1.7;if(dir==="up")ny-=s;if(dir==="down")ny+=s;if(dir==="left")nx-=s;if(dir==="right")nx+=s;nx=Math.max(6,Math.min(94,nx));ny=Math.max(10,Math.min(90,ny));if(!blocked(nx,ny)){x=nx;y=ny;draw()}}
+ function setFromPointer(clientX,clientY){
+  const r=map.getBoundingClientRect();
+  let nx=((clientX-r.left-offsetX)/r.width)*100,ny=((clientY-r.top-offsetY)/r.height)*100;
+  nx=Math.max(6,Math.min(94,nx));ny=Math.max(10,Math.min(90,ny));
+  if(!blocked(nx,ny)){x=nx;y=ny;draw()}
+ }
  function checkNests(){document.querySelectorAll(".nest").forEach(n=>{if(n.dataset.hit)return;const a=n.getBoundingClientRect(),b=t.getBoundingClientRect();if(Math.hypot((a.left+a.width/2)-(b.left+b.width/2),(a.top+a.height/2)-(b.top+b.height/2))<48){n.dataset.hit="1";n.classList.add("saved");score+=100;rescues++;$("#resc").textContent=rescues;$("#rp").textContent=score;if(rescues===3)finish()}})}
- function bindHold(btn){const dir=btn.dataset.dir;let held=null;const stop=()=>{if(held){clearInterval(held);held=null}};btn.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();btn.setPointerCapture(e.pointerId);step(dir);held=setInterval(()=>step(dir),90)});["pointerup","pointercancel","pointerleave"].forEach(ev=>btn.addEventListener(ev,stop))}
- document.querySelectorAll(".rescue-controls button").forEach(bindHold);
- const down=e=>{const d={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right"}[e.key];if(d){e.preventDefault();keys[d]=true}},up=e=>{delete keys[e.key]};window.addEventListener("keydown",down);window.addEventListener("keyup",up);
- moveLoop=setInterval(()=>Object.keys(keys).forEach(step),70);draw();timerId=setInterval(()=>{sec--;$("#sec").textContent=sec;if(sec<=0)finish()},1000);
- function finish(){if(!playing)return;playing=false;clearInterval(timerId);clearInterval(moveLoop);window.removeEventListener("keydown",down);window.removeEventListener("keyup",up);result("rescate",score,rescues===3?"¡Las tres tortugas están a salvo!":"¡Rescate terminado!")}
+ const onMove=e=>{if(!dragging)return;e.preventDefault();setFromPointer(e.clientX,e.clientY)};
+ const onUp=e=>{if(!dragging)return;e.preventDefault();dragging=false;t.classList.remove("dragging");document.body.classList.remove("dragging-turtle");document.removeEventListener("pointermove",onMove,true);document.removeEventListener("pointerup",onUp,true);document.removeEventListener("pointercancel",onUp,true)};
+ t.addEventListener("pointerdown",e=>{
+  if(!playing)return;e.preventDefault();e.stopPropagation();const tr=t.getBoundingClientRect();
+  offsetX=e.clientX-(tr.left+tr.width/2);offsetY=e.clientY-(tr.top+tr.height/2);
+  dragging=true;t.setPointerCapture(e.pointerId);t.classList.add("dragging");document.body.classList.add("dragging-turtle");
+  document.addEventListener("pointermove",onMove,true);document.addEventListener("pointerup",onUp,true);document.addEventListener("pointercancel",onUp,true);
+ });
+ draw();
+ timerId=setInterval(()=>{sec--;$("#sec").textContent=sec;if(sec<=0)finish()},1000);
+ function finish(){if(!playing)return;playing=false;clearInterval(timerId);onUp({preventDefault(){}});result("rescate",score,rescues===3?"¡Las tres tortugas están a salvo!":"¡Rescate terminado!")}
 }
-
 function pesca(){
  let caught=0,score=0,playing=true,cast=false,fish=[],drag=false,spawnLoop;
  content.innerHTML='<div class="card fishing-card"><div class="game-head"><h2>🎣 Pesca Caribeña</h2><span class="badge"><b id="caught">0</b>/8 peces</span></div><div class="fishing-instructions"><b id="fishHint">1. Pulsa LANZAR.</b><span>2. Arrastra el cebo por el agua.</span><span>3. Suelta el dedo encima de un pez.</span></div><div class="fishing-zone" id="water"><div class="boat">🛶</div><div class="rod">╲</div><div class="line" id="line"></div><div class="bait" id="bait">🪱</div><div class="cast-guide" id="castGuide">Pulsa LANZAR para comenzar</div></div><div class="fish-controls"><button class="primary big-action" id="cast">🎣 LANZAR EL HILO</button></div><div class="stat-line"><span>⭐ Puntos: <b id="fishScore">0</b></span><span>🐟 Atrapa: <b id="fishCount">0</b>/8</span></div></div>';
