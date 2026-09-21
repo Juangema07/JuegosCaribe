@@ -1,8 +1,16 @@
 # 🌴 Ruta Caribe
+Web educativa interactiva sobre la Región Caribe de Colombia.
 
-Mini web educativa sobre la Región Caribe de Colombia.
+## 🎮 Minijuegos
+- 🥁 El Ritmo del Caribe — juego de reflejos.
+- 🍲 La Cocina Caribe — selección de ingredientes.
+- 🐢 Rescate del Caribe — reflejos y obstáculos.
+- 🎣 Pesca Caribeña — precisión y captura.
+- 🌊 Salva el Ecosistema — decisiones ambientales.
 
-Incluye cinco juegos: Ritmo, Explorador, Cocina, Detective y Ecosistema.
+Incluye rondas, contenido aleatorio, puntuación, Pasaporte Caribe y guardado local.
 
-## GitHub Pages
-En **Settings → Pages**, selecciona **Deploy from a branch**, rama **main** y carpeta **/ (root)**.
+## 🌐 GitHub Pages
+URL del proyecto: https://juangema07.github.io/JuegosCaribe/
+
+Para un dominio/subdominio personalizado hace falta un dominio propio y su configuración DNS.
