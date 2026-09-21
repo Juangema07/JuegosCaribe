@@ -1,7 +1,7 @@
 
 const $=s=>document.querySelector(s),menu=$("#menu"),game=$("#game"),content=$("#gameContent"),stamps=$("#stamps"),total=$("#totalScore"),progress=$("#progress");
 const games=["ritmo","cocina","rescate","pesca","eco"],icons={ritmo:"🥁",cocina:"🍲",rescate:"🐢",pesca:"🎣",eco:"🌊"};
-let state=JSON.parse(localStorage.getItem("rutaCaribe")||'{"score":0,"done":[]}'),timer;
+let state={score:0,done:[]},timer;try{const saved=JSON.parse(localStorage.getItem("rutaCaribe")||'{"score":0,"done":[]}');if(saved&&Array.isArray(saved.done)){state={score:Number(saved.score)||0,done:saved.done.filter(g=>games.includes(g))}}}catch(e){localStorage.removeItem("rutaCaribe")}
 
 function save(){localStorage.setItem("rutaCaribe",JSON.stringify(state));total.textContent=state.score;progress.textContent=state.done.length+"/5";stamps.innerHTML='<div class="stamp-row">'+games.map(g=>'<span class="stamp '+(state.done.includes(g)?"done":"")+'">'+(state.done.includes(g)?icons[g]:"○")+"</span>").join("")+"</div>"}
 function complete(g,p){if(!state.done.includes(g))state.done.push(g);state.score+=p;save()}
