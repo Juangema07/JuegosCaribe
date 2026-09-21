@@ -46,3 +46,21 @@ main{max-width:1050px;margin:auto;padding:18px}
 footer{text-align:center;color:var(--muted);padding:20px}
 @media(max-width:700px){main{padding:10px}.hero{padding:24px;border-radius:24px}.grid{grid-template-columns:1fr}.game-card{min-height:155px}.card{padding:15px;border-radius:22px}.game-head{align-items:flex-start}.instrument-list{grid-template-columns:repeat(2,1fr)}.dish-photo{height:210px!important}.rescue-map,.fishing-zone,.eco-sort{height:360px!important}.howto{grid-template-columns:1fr}.howto span{margin-bottom:5px}}
 @media(max-width:390px){.instrument-list{grid-template-columns:1fr 1fr}.rhythm-pad{grid-template-columns:1fr 1fr}.game-card{padding:17px}.game-card .icon{font-size:2.4rem}}
+
+/* ===== Correcciones de interacción y rescate ===== */
+.rescue-map{touch-action:none!important;user-select:none;-webkit-user-select:none}
+.rescue-rock{width:74px;height:54px;object-fit:contain;position:absolute;font-size:0;opacity:1;z-index:2;pointer-events:none;filter:drop-shadow(0 5px 3px #0004)}
+.rescue-rock.r1{left:27%;top:39%;transform:rotate(-12deg)}.rescue-rock.r2{left:62%;top:58%;transform:rotate(18deg)}.rescue-rock.r3{left:15%;top:70%;transform:rotate(-5deg)}
+.hazard{position:absolute;z-index:2;font-size:2rem;filter:drop-shadow(0 4px 3px #0004);animation:dangerPulse 1.4s ease-in-out infinite}
+.hazard.h1{left:49%;top:48%}.hazard.h2{left:78%;top:69%}.hazard.h3{left:53%;top:25%}.hazard.h4{left:84%;top:44%}
+@keyframes dangerPulse{50%{transform:scale(1.13);opacity:.75}}
+.turtle.hurt{filter:drop-shadow(0 0 8px #d44) saturate(1.6);transform:translate(-50%,-50%) scale(1.12)}
+.fishing-zone{touch-action:none!important;user-select:none;-webkit-user-select:none;cursor:crosshair}
+.bait{pointer-events:none;transition:left .03s linear,top .03s linear}
+.line{pointer-events:none}
+.swim-fish{pointer-events:none;will-change:transform}
+.eco-sort{touch-action:none!important;user-select:none;-webkit-user-select:none}
+.eco-sort #ecoItems{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.falling-trash{pointer-events:auto;touch-action:none!important}
+.falling-trash.correct{animation:correctTrash .18s ease-out}.falling-trash.wrong{animation:wrongTrash .18s ease-out}
+@keyframes correctTrash{to{transform:scale(1.6);opacity:0}}@keyframes wrongTrash{50%{transform:translateX(-8px)}}
