@@ -12,13 +12,48 @@ document.querySelectorAll("[data-game]").forEach(b=>b.onclick=()=>open(b.dataset
 function result(g,p,t){complete(g,p);content.innerHTML='<div class="card" style="text-align:center"><div class="dish">'+icons[g]+'</div><h2>'+t+'</h2><p class="score-big">+'+p+' puntos</p><p>Marcador total: <b>'+state.score+'</b></p><button class="primary" onclick="open(\''+g+'\')">Jugar otra vez</button> <button class="back" onclick="document.querySelector(\'#back\').click()">Menú</button></div>'}
 
 function ritmo(){
- let round=0,score=0;
- function play(){
-  content.innerHTML='<div class="card"><div class="game-head"><h2>🥁 El Ritmo del Caribe</h2><span class="badge">Ronda '+(round+1)+'/5</span></div><p>Espera el momento exacto y golpea el tambor cuando la nota esté dentro de la zona central.</p><div class="timing"><div class="target"></div><span class="note" id="note">🥁</span></div><div class="action-row"><button class="primary big-action" id="hit">🥁 ¡GOLPEAR!</button></div><div class="feedback" id="fb"></div></div>';
-  let x=Math.random()*10,d=1;
-  timer=setInterval(()=>{x+=d*3;if(x>94||x<0)d=-d;$("#note").style.left=x+"%"},25);
-  $("#hit").onclick=()=>{clearInterval(timer);const dist=Math.abs(x-47.5);const pts=dist<7?120:dist<15?75:25;score+=pts;$("#fb").textContent=pts===120?"¡PERFECTO! 🔥":pts===75?"¡Buen golpe! 👏":"¡Sigue el ritmo! 🎵";setTimeout(()=>{round++;round<5?play():result("ritmo",score,"¡Ritmo completado!")},450)}
- } play()
+ let round=0,score=0,combo=0,pattern=[],input=[];
+ const sounds=["🥁","🪘","👏","🔔"];
+ function makePattern(){
+  pattern=Array.from({length:round<2?3:round<4?4:5},()=>Math.floor(Math.random()*sounds.length));
+  input=[];
+ }
+ function render(){
+  content.innerHTML='<div class="card"><div class="game-head"><h2>🥁 El Ritmo del Caribe</h2><span class="badge">Ronda '+(round+1)+'/5</span></div><p>Memoriza el ritmo y repítelo tocando los instrumentos en el mismo orden.</p><div class="rhythm-display" id="rhythmDisplay">'+pattern.map((n,i)=>'<span class="rhythm-symbol" data-i="'+i+'">'+sounds[n]+'</span>').join("")+'</div><div class="rhythm-pad">'+sounds.map((x,i)=>'<button class="rhythm-btn" data-v="'+i+'">'+x+'</button>').join("")+'</div><div class="action-row"><button class="primary big-action" id="startRhythm">▶️ VER RITMO</button></div><div class="feedback" id="fb">Primero mira la secuencia.</div></div>';
+  document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);
+  $("#startRhythm").onclick=showPattern;
+ }
+ function showPattern(){
+  $("#startRhythm").disabled=true;
+  const symbols=[...document.querySelectorAll(".rhythm-symbol")];
+  symbols.forEach(x=>x.style.opacity=".25");
+  let i=0;
+  const next=()=>{if(i>=symbols.length){symbols.forEach(x=>x.style.opacity="1");document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=false);$("#fb").textContent="¡Ahora repítelo!";return}
+   symbols.forEach(x=>x.classList.remove("active"));symbols[i].style.opacity="1";symbols[i].classList.add("active");i++;setTimeout(next,520)};
+  next();
+ }
+ function nextRound(){
+  round++;
+  if(round>=5){result("ritmo",score,"¡Ritmo completado!");return}
+  makePattern();render();
+ }
+ makePattern();render();
+ document.addEventListener("click",function handler(e){
+  if(!game.classList.contains("hidden")&&e.target.classList.contains("rhythm-btn")){
+   const v=+e.target.dataset.v;
+   if(v!==pattern[input.length]){
+    combo=0;score+=Math.max(0,10-input.length*2);$("#fb").textContent="❌ Ritmo incorrecto. Mira la secuencia otra vez.";
+    document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);
+    setTimeout(()=>{input=[];showPattern()},700);return;
+   }
+   input.push(v);e.target.classList.add("active");setTimeout(()=>e.target.classList.remove("active"),160);
+   if(input.length===pattern.length){
+    combo++;const pts=60+combo*20;score+=pts;$("#fb").textContent="🔥 ¡Ritmo correcto! +"+pts+" puntos";
+    document.querySelectorAll(".rhythm-btn").forEach(b=>b.disabled=true);
+    setTimeout(nextRound,650);
+   }
+  }
+ });
 }
 
 const recipes=[["Arroz de coco",["🥥","🍚","💧","🧂"]],["Arepa de huevo",["🌽","🥚","🫗","🧂"]],["Sancocho costeño",["🥔","🍌","🌽","🍗"]],["Carimañola",["🥔","🥩","🧅","🧂"]],["Enyucado",["🥔","🥥","🧀","🍬"]]];
